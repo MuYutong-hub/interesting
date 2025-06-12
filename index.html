@@ -3,136 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>interested vs interesting 学习Demo</title>
+    <title>InteractED - Learn -ed vs -ing Adjectives</title>
     <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --correct: #4cc9f0;
+            --incorrect: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
         }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .tagline {
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
         .card-container {
             display: flex;
             justify-content: space-around;
             margin: 30px 0;
             flex-wrap: wrap;
+            gap: 20px;
         }
+        
         .card {
             width: 45%;
-            padding: 20px;
+            min-width: 250px;
+            padding: 25px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
             text-align: center;
-            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+        
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+        }
+        
+        .card:nth-child(2)::after {
+            background: var(--secondary);
+        }
+        
         .card img {
             width: 100px;
             height: 100px;
             object-fit: contain;
             margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
+        
         .quiz {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            position: relative;
         }
+        
+        .quiz-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
         button {
-            background-color: #4CAF50;
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-weight: 600;
         }
+        
         button:hover {
-            background-color: #45a049;
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         .feedback {
             margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        .correct {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .incorrect {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .rule-summary {
-            background-color: #e7f1ff;
             padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+            border-left: 5px solid;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .correct {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: #0e6694;
+            border-left-color: var(--correct);
+        }
+        
+        .incorrect {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: #8b1538;
+            border-left-color: var(--incorrect);
+        }
+        
+        .rule-summary {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.1));
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .summary-icon {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        input[type="radio"], input[type="text"] {
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="radio"]:checked + label {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .radio-group {
+            margin: 10px 0;
+        }
+        
+        .floating-emoji {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .floating-emoji:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .emoji-keyboard {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 99;
+            max-width: 250px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .emoji-keyboard.show {
+            display: block;
+        }
+        
+        .emoji-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .emoji-item {
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .emoji-item:hover {
+            transform: scale(1.2);
+        }
+        
+        .completion-message {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(58, 12, 163, 0.1));
+            border-radius: 12px;
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @media (max-width: 600px) {
+            .card {
+                width: 100%;
+            }
+            
+            .quiz {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>interested 还是 interesting？</h1>
-    <p>5分钟快速掌握 -ed 和 -ing 形容词的区别</p>
+    <header>
+        <h1>InteractED</h1>
+        <p class="tagline">Master -ed vs -ing adjectives in minutes!</p>
+    </header>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progress"></div>
+    </div>
     
     <div class="card-container">
-        <div class="card">
+        <div class="card" data-emoji="😃" data-hover="I'm interested!">
             <img src="person.png" alt="Person">
-            <h3>-ed (人的感受)</h3>
+            <h3>-ed (How people feel)</h3>
             <p>"I am <strong>interested</strong> in this topic."</p>
-            <p>"She looks <strong>bored</strong>."</p>
+            <p>"She looks <strong>excited</strong> about the trip."</p>
+            <p>"He was <strong>surprised</strong> by the news."</p>
         </div>
-        <div class="card">
+        <div class="card" data-emoji="📚" data-hover="This is interesting!">
             <img src="book.png" alt="Thing">
-            <h3>-ing (事物的特性)</h3>
+            <h3>-ing (Characteristics of things)</h3>
             <p>"This topic is <strong>interesting</strong>."</p>
-            <p>"The lecture was <strong>boring</strong>."</p>
+            <p>"The game was <strong>exciting</strong>."</p>
+            <p>"The news was <strong>surprising</strong>."</p>
         </div>
     </div>
-
     <div class="quiz" id="quiz1">
-        <h3>练习 1: 选择题</h3>
+        <div class="quiz-number">1</div>
+        <h3>Multiple Choice</h3>
         <p>The movie was so ___ that we all felt ___.</p>
-        <input type="radio" name="q1" id="q1a" value="a">
-        <label for="q1a">interesting / interested</label><br>
-        <input type="radio" name="q1" id="q1b" value="b">
-        <label for="q1b">interested / interesting</label><br>
-        <button onclick="checkAnswer(1, 'a')">提交答案</button>
+        <div class="radio-group">
+            <input type="radio" name="q1" id="q1a" value="a">
+            <label for="q1a">interesting / interested</label>
+        </div>
+        <div class="radio-group">
+            <input type="radio" name="q1" id="q1b" value="b">
+            <label for="q1b">interested / interesting</label>
+        </div>
+        <div class="radio-group">
+            <input type="radio" name="q1" id="q1c" value="c">
+            <label for="q1c">interesting / interesting</label>
+        </div>
+        <button onclick="checkAnswer(1, 'a')">Submit Answer</button>
         <div class="feedback" id="feedback1"></div>
     </div>
-
     <div class="quiz" id="quiz2">
-        <h3>练习 2: 填空题</h3>
+        <div class="quiz-number">2</div>
+        <h3>Fill in the Blanks</h3>
         <p>This game is ___ (interest), but my sister isn't ___ (interest) in it.</p>
-        <input type="text" id="q2a" placeholder="第一个空"> 
-        <input type="text" id="q2b" placeholder="第二个空"><br>
-        <button onclick="checkAnswer(2, ['interesting', 'interested'])">提交答案</button>
+        <input type="text" id="q2a" placeholder="First blank"> 
+        <input type="text" id="q2b" placeholder="Second blank"><br>
+        <button onclick="checkAnswer(2, ['interesting', 'interested'])">Submit Answer</button>
         <div class="feedback" id="feedback2"></div>
     </div>
-
     <div class="quiz" id="quiz3">
-        <h3>练习 3: 图片题</h3>
-        <img src="sleepy.png" alt="Sleepy student" style="width:200px;">
+        <div class="quiz-number">3</div>
+        <h3>Visual Context</h3>
+        <img src="sleepy.png" alt="Sleepy student" style="width:100%; max-width:300px; border-radius:8px;">
         <p>The student looks ___ because the book seems ___.</p>
-        <input type="text" id="q3a" placeholder="第一个空"> 
-        <input type="text" id="q3b" placeholder="第二个空"><br>
-        <button onclick="checkAnswer(3, ['bored', 'boring'])">提交答案</button>
+        <input type="text" id="q3a" placeholder="First blank"> 
+        <input type="text" id="q3b" placeholder="Second blank"><br>
+        <button onclick="checkAnswer(3, ['bored', 'boring'])">Submit Answer</button>
         <div class="feedback" id="feedback3"></div>
     </div>
-
-    <div class="rule-summary">
-        <h3>📌 规则总结</h3>
-        <p><strong>-ed</strong> → 描述<strong>人的感受</strong> (I feel ___)</p>
-        <p><strong>-ing</strong> → 描述<strong>事物的特性</strong> (This is ___)</p>
-        <p>✨ 记忆口诀：<strong>"-ed是人，-ing是物！"</strong></p>
+    <div class="quiz" id="quiz4" style="display:none;">
+        <div class="quiz-number">4</div>
+        <h3>Real-World Example</h3>
+        <p style="font-style: italic;">"She was ___ (disappoint) with the ___ (disappoint) results."</p>
+        <input type="text" id="q4a" placeholder="First blank"> 
+        <input type="text" id="q4b" placeholder="Second blank"><br>
+        <button onclick="checkAnswer(4, ['disappointed', 'disappointing'])">Submit Answer</button>
+        <div class="feedback" id="feedback4"></div>
     </div>
-
+    <div class="completion-message" id="completionMessage">
+        <h2>🎉 Congratulations! 🎉</h2>
+        <p>You've completed the InteractED lesson on -ed and -ing adjectives!</p>
+        <p>Want to challenge yourself with an extra question?</p>
+        <button onclick="showBonusQuestion()">Show Bonus Question</button>
+    </div>
+    <div class="rule-summary">
+        <div class="summary-header">
+            <span class="summary-icon">📌</span>
+            <h3>Key Rules to Remember</h3>
+        </div>
+        <p><strong>-ed adjectives</strong> → Describe <strong>how people feel</strong> (I feel ___)</p>
+        <p><strong>-ing adjectives</strong> → Describe <strong>the characteristics of things/events</strong> (This is ___)</p>
+        <p>✨ <strong>Memory Hack</strong>: "-ed has a head (person), -ing is a thing!"</p>
+        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+            <span style="font-size: 24px;">😴</span>
+            <span>→ bored (person)</span>
+            <span style="margin-left: 15px; font-size: 24px;">📖</span>
+            <span>→ boring (book)</span>
+        </div>
+    </div>
+    <div class="floating-emoji" onclick="toggleEmojiKeyboard()">
+        😊
+    </div>
+    
+    <div class="emoji-keyboard" id="emojiKeyboard">
+        <div class="emoji-row">
+            <span class="emoji-item" onclick="selectEmoji('😀')">😀</span>
+            <span class="emoji-item" onclick="selectEmoji('😃')">😃</span>
+            <span class="emoji-item" onclick="selectEmoji('😄')">😄</span>
+            <span class="emoji-item" onclick="selectEmoji('😁')">😁</span>
+        </div>
+        <div class="emoji-row">
+            <span class="emoji-item" onclick="selectEmoji('👏')">👏</span>
+            <span class="emoji-item" onclick="selectEmoji('🎉')">🎉</span>
+            <span class="emoji-item" onclick="selectEmoji('👍')">👍</span>
+            <span class="emoji-item" onclick="selectEmoji('💡')">💡</span>
+        </div>
+    </div>
     <script>
+        let correctAnswers = 0;
+        const totalQuizzes = 3; // 初始测验数量(不包括加分题)
+        
         function checkAnswer(quizNum, correctAnswer) {
             let feedback = document.getElementById(`feedback${quizNum}`);
             let isCorrect = false;
@@ -148,23 +438,136 @@
                 const answer1 = document.getElementById(`q${quizNum}a`).value.trim().toLowerCase();
                 const answer2 = document.getElementById(`q${quizNum}b`).value.trim().toLowerCase();
                 
-                if (quizNum === 2) {
-                    isCorrect = answer1 === correctAnswer[0] && answer2 === correctAnswer[1];
-                } else if (quizNum === 3) {
-                    isCorrect = answer1 === correctAnswer[0] && answer2 === correctAnswer[1];
-                }
+                isCorrect = answer1 === correctAnswer[0] && answer2 === correctAnswer[1];
             }
             
             // 显示反馈
             feedback.style.display = 'block';
             if (isCorrect) {
                 feedback.className = 'feedback correct';
-                feedback.innerHTML = '✅ 正确！';
+                feedback.innerHTML = '✅ <strong>正确!</strong> 你答对了!';
+                correctAnswers++;
+                
+                // 更新进度条
+                updateProgress();
+                
+                // 检查是否完成了所有基础测验
+                if (correctAnswers === totalQuizzes) {
+                    document.getElementById('completionMessage').style.display = 'block';
+                    // 小动画庆祝
+                    celebrate();
+                }
             } else {
                 feedback.className = 'feedback incorrect';
-                feedback.innerHTML = `❌ 不正确。正确答案是: <strong>${Array.isArray(correctAnswer) ? correctAnswer.join(' / ') : correctAnswer}</strong>`;
+                
+                let correctAnsString = Array.isArray(correctAnswer) ? 
+                    `<strong>${correctAnswer[0]}</strong> (描述事物) 和 <strong>${correctAnswer[1]}</strong> (描述感受)` : 
+                    correctAnswer;
+                
+                feedback.innerHTML = `
+                    ❌ <strong>哎呀!</strong> 再试一次。<br>
+                    正确答案是: ${correctAnsString}<br>
+                    记住: <em>"-ed是人，-ing是物"</em>
+                `;
             }
         }
+        
+        function updateProgress() {
+            const progress = (correctAnswers / totalQuizzes) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            
+            // 进度条颜色变化
+            if (progress >= 66) {
+                document.getElementById('progress').style.background = 'linear-gradient(90deg, #4cc9f0, #4361ee)';
+            }
+        }
+        
+        function toggleEmojiKeyboard() {
+            const keyboard = document.getElementById('emojiKeyboard');
+            keyboard.classList.toggle('show');
+        }
+        
+        function selectEmoji(emoji) {
+            const floatingBtn = document.querySelector('.floating-emoji');
+            floatingBtn.textContent = emoji;
+            toggleEmojiKeyboard();
+            
+            // 小动画
+            floatingBtn.style.transform = 'scale(1.2) rotate(20deg)';
+            setTimeout(() => {
+                floatingBtn.style.transform = 'scale(1) rotate(0)';
+            }, 300);
+        }
+        
+        function showBonusQuestion() {
+            document.getElementById('quiz4').style.display = 'block';
+            document.getElementById('completionMessage').style.display = 'none';
+            
+            // 平滑滚动到加分题
+            document.getElementById('quiz4').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        function celebrate() {
+            const emojis = ['🎉', '✨', '👍', '👏', '💯'];
+            const completionDiv = document.getElementById('completionMessage');
+            
+            // 创建一些漂浮的emoji
+            for (let i = 0; i < 10; i++) {
+                const emoji = document.createElement('div');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.position = 'absolute';
+                emoji.style.left = `${Math.random() * 100}%`;
+                emoji.style.top = '-30px';
+                emoji.style.fontSize = `${Math.random() * 20 + 20}px`;
+                emoji.style.opacity = '0';
+                emoji.style.transition = `all ${Math.random() * 2 + 1}s ease-out`;
+                
+                completionDiv.appendChild(emoji);
+                
+                setTimeout(() => {
+                    emoji.style.opacity = '1';
+                    emoji.style.top = '150%';
+                    emoji.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }, i * 200);
+            }
+            
+            // 3秒后清除
+            setTimeout(() => {
+                while (completionDiv.childElementCount > 3) {
+                    completionDiv.removeChild(completionDiv.lastChild);
+                }
+            }, 4000);
+        }
+        
+        // 卡片悬停效果
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const emoji = card.getAttribute('data-emoji');
+                const message = card.getAttribute('data-hover');
+                card.querySelector('img').style.transform = 'scale(1.1)';
+                
+                // 可以添加tooltip显示悬停信息
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.querySelector('img').style.transform = 'scale(1)';
+            });
+        });
+        
+        // 输入框回车提交
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const quizId = input.id.substring(1).charAt(0);
+                    const button = document.querySelector(`#quiz${quizId} button`);
+                    if (button) {
+                        button.click();
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
